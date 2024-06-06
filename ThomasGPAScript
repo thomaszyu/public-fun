@@ -35,20 +35,22 @@ for you, and you can pick whichever one you like best.
 See comments for more details on how to use this script. Enjoy!
 '''
 
+# the following grade dictionaries are for berkeley's points,
 # change these according to your school's grade point policy.
 
-# unweighted grade dictionary (A = A+ here)
+# unweighted grade dictionary (A = A+ for this one)
 gradeDictU = {'A+': 4, 'A': 4, 'A-': 3.7, 
               'B+': 3.3, 'B': 3.0, 'B-': 2.7,
               'C+': 2.3, 'C': 2, 'C-': 1.7,
               'D+': 1.3, 'D': 1, 'D-': 0.7, 'F': 0}
 
-# weighted grade dictionary (A < A+ here)
+# weighted grade dictionary (A < A+ for this one)
 gradeDictW = {'A+': 4.3, 'A': 4, 'A-': 3.7, 
               'B+': 3.3, 'B': 3.0, 'B-': 2.7,
               'C+': 2.3, 'C': 2, 'C-': 1.7,
               'D+': 1.3, 'D': 1, 'D-': 0.7, 'F': 0}
 
+# you can ignore everything between here and line 170ish
 class Course:
     def __init__(self, name, units, grade, tech = True):
             self.name = name
@@ -162,39 +164,43 @@ class Term:
         print('Unscaled Technical Unweighted: ', unscaledData[2])
         print('Unscaled Technical Weighted: ', unscaledData[3])
 
-# example code
 
-# Thomas's de anza college grades
+''' Entering your grades
+The template for making courses is as follows:
+
+x = Course(coursename <string>, units <int>, grade <string>, technical or not <boolean>)
+If the course is technical then you can omit the last argument, but be sure to specify
+when courses are NOT technical -- this way it won't get counted into your technical GPA.
+
+See the below example code for more details.
+'''
 
 Fa21_1 = Course('Math 10', 5, 'A+') # this is a technical
-Fa21_2 = Course('EWRT 1A', 5, 'A+', False)
-    # this is an english writing course (i.e. not a technical)
-    # so the extra 'false' parameter is needed so that it won't
-    # be counted into the technical-course-only GPA.
-
+Fa21_2 = Course('EWRT 1A', 5, 'A+', False) # this is not a technical
 Fa21_3 = Course('Poli 1', 5, 'A+', False)
-Fall2021List = [Fa21_1, Fa21_2, Fa21_3]
-Fall2021 = Term('Fall 2021', Fall2021List)
 
+Fall2021List = [Fa21_1, Fa21_2, Fa21_3] # puts all courses into a list
+Fall2021 = Term('Fall 2021', Fall2021List) # creates Term object using the course list
+
+Fall2021.printGPA() # this outputs your 8 different GPA calculations!
+print() # just for a terminal blank line
+
+# two more quarters of courses, just to illustrate a point
 Wi22_1 = Course('Chem 1A', 5, 'A')
 Wi22_2 = Course('Math 1C', 5, 'A')
-Wi22_3 = Course('Econ 1', 4, 'A', False)
-Wi22_4 = Course('Musi 3B', 4, 'A', False)
-Winter2022List = [Wi22_1, Wi22_2, Wi22_3, Wi22_4]
+Winter2022List = [Wi22_1, Wi22_2]
 Winter2022 = Term('Winter 2022', Winter2022List)
 
 Sp22_1 = Course('Chem 1B', 5, 'A+')
 Sp22_2 = Course('Math 1D', 5, 'A+')
-Sp22_3 = Course('Bus 21', 5, 'A+', False)
-Sp22_4 = Course('Musi 3C', 4, 'A', False)
-Spring2022List = [Sp22_1, Sp22_2, Sp22_3, Sp22_4]
+Spring2022List = [Sp22_1, Sp22_2]
 Spring2022 = Term('Spring 2022', Spring2022List)
 
-Fall2021.printGPA()
-print()
 
-AllDeAnzaCourseList = Fall2021List + Winter2022List + Spring2022List
-AllDeAnza = Term('De Anza Lifetime', AllDeAnzaCourseList)
-AllDeAnza.printGPA()
+# you can combine multiple semesters by combining their course lists,
+# then creating a new Term object using the combined course list.
 
-AllDeAnza.printGPA()
+FullYearList = Fall2021List + Winter2022List + Spring2022List
+21to22FullYear = Term('2021-2022 School Year', FullYearList)
+21to22FullYear.printGPA()
+
