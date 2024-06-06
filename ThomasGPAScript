@@ -201,6 +201,6 @@ Spring2022 = Term('Spring 2022', Spring2022List)
 # then creating a new Term object using the combined course list.
 
 FullYearList = Fall2021List + Winter2022List + Spring2022List
-21to22FullYear = Term('2021-2022 School Year', FullYearList)
-21to22FullYear.printGPA()
+FullYear = Term('2021-2022 School Year', FullYearList)
+FullYear.printGPA()
 
