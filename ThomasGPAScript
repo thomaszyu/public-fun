@@ -1,0 +1,200 @@
+''' GPA calculator script, by Thomas Yu 06/06/2024
+
+How you calculate your GPA has an impact on the number.
+This script calculates your GPA in 2^3 = 8 different ways, 
+so that you can take the highest one and it will technically be true.
+** Disclaimer: only use this for things that don't require transcripts
+               e.g. resumes, since your school has a standardized way of
+               calculating GPAs that you should go with if transcripts are
+               required.
+
+---
+               
+Terminology
+Scaled GPA (S): classes worth more units count more towards your GPA
+Unscaled GPA (U): a straight average of your grade points
+
+Weighted (U): A+ counts for extra points
+Unweighted (W): A+ counts for the same # of points as an A
+
+Technical vs. non-Technical should be self-explanatory.
+
+---
+
+How the script works
+Your data for each course is stored in a "Course" object,
+which keeps track of the name, grade, and unit count of the course,
+and whether or not it is a technical course. 
+
+Then, for each 'term', you can make a list of courses, and feed that
+to a Term object. This Term object has methods that calculate all 8 GPAs
+for you, and you can pick whichever one you like best.
+
+---
+
+See comments for more details on how to use this script. Enjoy!
+'''
+
+# change these according to your school's grade point policy.
+
+# unweighted grade dictionary (A = A+ here)
+gradeDictU = {'A+': 4, 'A': 4, 'A-': 3.7, 
+              'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+              'C+': 2.3, 'C': 2, 'C-': 1.7,
+              'D+': 1.3, 'D': 1, 'D-': 0.7, 'F': 0}
+
+# weighted grade dictionary (A < A+ here)
+gradeDictW = {'A+': 4.3, 'A': 4, 'A-': 3.7, 
+              'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+              'C+': 2.3, 'C': 2, 'C-': 1.7,
+              'D+': 1.3, 'D': 1, 'D-': 0.7, 'F': 0}
+
+class Course:
+    def __init__(self, name, units, grade, tech = True):
+            self.name = name
+            self.grade = grade
+            self.units = units
+            self.tech = tech
+
+    def UcalcPointsUnweighted(self):
+        if self.grade == 'P': return [0, 0]
+        else: 
+            return [1, gradeDictU[self.grade]]
+        
+    def UcalcPointsWeighted(self):
+        if self.grade == 'P': return [0, 0]
+        else: 
+            return [1, gradeDictW[self.grade]]
+
+    def ScalcPointsUnweighted(self):
+        if self.grade == 'P': return [0, 0]
+        else: 
+            return [self.units, self.units * gradeDictU[self.grade]]
+        
+    def ScalcPointsWeighted(self):
+        if self.grade == 'P': return [0, 0]
+        else: 
+            return [self.units, self.units * gradeDictW[self.grade]]
+
+    def UCPU(self): return self.UcalcPointsUnweighted()
+    def UCPW(self): return self.UcalcPointsWeighted()
+    def SCPU(self): return self.ScalcPointsUnweighted()  
+    def SCPW(self): return self.ScalcPointsWeighted()
+    
+
+    def __str__(self): return self.name + ', ' + str(self.units) + ' units, ' + self.grade
+
+class Term:
+    def __init__(self, name, courses):
+        self.name = name
+        self.courses = courses
+
+    def ScaledGPACalc(self):
+        unit_total, uw_points_total, w_points_total = 0, 0, 0
+        tech_units, uw_tech_pts, w_tech_pts = 0, 0, 0
+
+        for course in self.courses:
+            scpu = course.SCPU()
+            scpw = course.SCPW()
+            
+
+            unit_total += scpu[0]
+            uw_points_total += scpu[1]
+            w_points_total += scpw[1]
+
+            if course.tech:
+                tech_units += scpu[0]
+                uw_tech_pts += scpu[1]
+                w_tech_pts += scpw[1]
+
+        cumulative_uw = uw_points_total / unit_total
+        cumulative_w = w_points_total / unit_total
+        tech_only_uw = uw_tech_pts / tech_units
+        tech_only_w = w_tech_pts / tech_units
+
+        temp = [cumulative_uw, cumulative_w, tech_only_uw, tech_only_w] 
+        result = []
+        for number in temp: result += [round(number * 1000) / 1000]
+        return result
+    
+    def UnscaledGPACalc(self):
+        unit_total, uw_points_total, w_points_total = 0, 0, 0
+        tech_units, uw_tech_pts, w_tech_pts = 0, 0, 0
+
+        for course in self.courses:
+            ucpu = course.UCPU()
+            ucpw = course.UCPW()
+            
+
+            unit_total += ucpu[0]
+            uw_points_total += ucpu[1]
+            w_points_total += ucpw[1]
+
+            if course.tech:
+                tech_units += ucpu[0]
+                uw_tech_pts += ucpu[1]
+                w_tech_pts += ucpw[1]
+
+        cumulative_uw = uw_points_total / unit_total
+        cumulative_w = w_points_total / unit_total
+        tech_only_uw = uw_tech_pts / tech_units
+        tech_only_w = w_tech_pts / tech_units
+
+        temp = [cumulative_uw, cumulative_w, tech_only_uw, tech_only_w] 
+        result = []
+        for number in temp: result += [round(number * 1000) / 1000]
+        return result
+
+    def GPACalc(self): return [self.ScaledGPACalc(), self.UnscaledGPACalc()]
+
+    def printGPA(self):
+        scaledData = self.GPACalc()[0]
+        unscaledData = self.GPACalc()[1]
+
+        print(self.name + ' Grade Statistics:')
+        print('Scaled Cumulative Unweighted: ', scaledData[0])
+        print('Scaled Cumulative Weighted: ', scaledData[1])
+        print('Scaled Technical Unweighted: ', scaledData[2])
+        print('Scaled Technical Weighted: ', scaledData[3])
+
+        print('Unscaled Cumulative Unweighted: ', unscaledData[0])
+        print('Unscaled Cumulative Weighted: ', unscaledData[1])
+        print('Unscaled Technical Unweighted: ', unscaledData[2])
+        print('Unscaled Technical Weighted: ', unscaledData[3])
+
+# example code
+
+# Thomas's de anza college grades
+
+Fa21_1 = Course('Math 10', 5, 'A+') # this is a technical
+Fa21_2 = Course('EWRT 1A', 5, 'A+', False)
+    # this is an english writing course (i.e. not a technical)
+    # so the extra 'false' parameter is needed so that it won't
+    # be counted into the technical-course-only GPA.
+
+Fa21_3 = Course('Poli 1', 5, 'A+', False)
+Fall2021List = [Fa21_1, Fa21_2, Fa21_3]
+Fall2021 = Term('Fall 2021', Fall2021List)
+
+Wi22_1 = Course('Chem 1A', 5, 'A')
+Wi22_2 = Course('Math 1C', 5, 'A')
+Wi22_3 = Course('Econ 1', 4, 'A', False)
+Wi22_4 = Course('Musi 3B', 4, 'A', False)
+Winter2022List = [Wi22_1, Wi22_2, Wi22_3, Wi22_4]
+Winter2022 = Term('Winter 2022', Winter2022List)
+
+Sp22_1 = Course('Chem 1B', 5, 'A+')
+Sp22_2 = Course('Math 1D', 5, 'A+')
+Sp22_3 = Course('Bus 21', 5, 'A+', False)
+Sp22_4 = Course('Musi 3C', 4, 'A', False)
+Spring2022List = [Sp22_1, Sp22_2, Sp22_3, Sp22_4]
+Spring2022 = Term('Spring 2022', Spring2022List)
+
+Fall2021.printGPA()
+print()
+
+AllDeAnzaCourseList = Fall2021List + Winter2022List + Spring2022List
+AllDeAnza = Term('De Anza Lifetime', AllDeAnzaCourseList)
+AllDeAnza.printGPA()
+
+AllDeAnza.printGPA()
